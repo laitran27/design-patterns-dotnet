@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \"const fs = require\\(''fs''\\); const content = fs.readFileSync\\(''D:/Me/Sen/js/patterns-data.js'', ''utf8''\\); console.log\\(''File size:'', content.length, ''bytes''\\); console.log\\(''Lines:'', content.split\\(''\\\\n''\\).length\\); try { eval\\(content.replace\\(''const PATTERNS_DATA'', ''var PATTERNS_DATA''\\).replace\\(''const PATTERN_STATS'', ''var PATTERN_STATS''\\).replace\\(''const PHASES_DATA'', ''var PHASES_DATA''\\).replace\\(''function getPatternOfTheDay'', ''var getPatternOfTheDay = function''\\)\\); console.log\\(''PATTERNS_DATA length:'', PATTERNS_DATA.length\\); console.log\\(''Parse: OK''\\); } catch\\(e\\) { console.error\\(''Parse error:'', e.message\\); }\")",
+      "Bash(node -e \":*)"
+    ]
+  }
+}

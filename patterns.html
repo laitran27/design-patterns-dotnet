@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Tất cả 23 GoF Design Patterns với ví dụ .NET 8 thực tế. Lọc theo Creational, Structural, Behavioral.">
+  <title>23 Design Patterns — .NET Patterns Tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .page-header {
+      padding: calc(var(--nav-height) + 40px) 0 40px;
+      background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+      border-bottom: 1px solid var(--border-color);
+    }
+    .category-overview {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 32px;
+    }
+    .category-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 20px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      background: var(--bg-card);
+      cursor: pointer;
+      transition: all var(--transition-base);
+      text-decoration: none;
+      color: inherit;
+    }
+    .category-card:hover {
+      transform: translateY(-2px);
+      color: inherit;
+    }
+    .category-card.creational:hover { border-color: var(--accent-blue-border); background: var(--accent-blue-dim); }
+    .category-card.structural:hover { border-color: var(--accent-green-border); background: var(--accent-green-dim); }
+    .category-card.behavioral:hover { border-color: rgba(139,92,246,0.3); background: var(--accent-purple-dim); }
+    .category-icon-wrap {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+    .category-count {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      line-height: 1;
+    }
+    .category-name {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .results-info {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+    .results-info strong {
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+    .priority-legend {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .priority-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .priority-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--text-muted);
+    }
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 16px;
+      display: block;
+      opacity: 0.4;
+    }
+    .empty-state h3 { color: var(--text-secondary); margin-bottom: 8px; }
+    @media (max-width: 768px) {
+      .category-overview { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body data-page="patterns">
+
+<!-- Navigation -->
+<nav class="navbar" role="navigation" aria-label="Main navigation">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">
+        <i class="fas fa-code"></i>
+      </div>
+      .NET <span>Patterns</span>
+    </a>
+    <ul class="nav-links" role="list">
+      <li><a href="index.html"><i class="fas fa-home"></i> Tổng quan</a></li>
+      <li><a href="patterns.html" class="active"><i class="fas fa-th-large"></i> 23 Patterns</a></li>
+      <li><a href="pattern-detail.html?id=singleton"><i class="fas fa-book-open"></i> Chi tiết</a></li>
+      <li>
+        <a href="progress.html">
+          <i class="fas fa-tasks"></i> Tiến độ
+          <span class="nav-badge" id="progress-nav-badge">0%</span>
+        </a>
+      </li>
+    </ul>
+    <button class="nav-mobile-toggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Page Header -->
+<header class="page-header" role="banner">
+  <div class="container">
+    <div class="breadcrumb" aria-label="Breadcrumb">
+      <a href="index.html">Trang chủ</a>
+      <i class="fas fa-chevron-right"></i>
+      <span>23 Patterns</span>
+    </div>
+    <h1 style="margin-bottom:8px">Tất Cả 23 GoF Design Patterns</h1>
+    <p style="color:var(--text-secondary);font-size:1rem;max-width:600px">
+      Gang of Four patterns với ví dụ .NET 8 thực tế. Sắp xếp theo ưu tiên học tập — patterns màu đỏ là quan trọng nhất cần học trước.
+    </p>
+
+    <!-- Category Overview -->
+    <div class="category-overview">
+      <button class="category-card creational" onclick="filterCategory('creational')">
+        <div class="category-icon-wrap" style="background:var(--accent-blue-dim)">
+          <i class="fas fa-plus-circle" style="color:var(--accent-blue)"></i>
+        </div>
+        <div>
+          <div class="category-count">5</div>
+          <div class="category-name">Creational · Khởi Tạo</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px">Singleton, Factory, Builder...</div>
+        </div>
+      </button>
+      <button class="category-card structural" onclick="filterCategory('structural')">
+        <div class="category-icon-wrap" style="background:var(--accent-green-dim)">
+          <i class="fas fa-sitemap" style="color:var(--accent-green)"></i>
+        </div>
+        <div>
+          <div class="category-count">7</div>
+          <div class="category-name">Structural · Cấu Trúc</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px">Adapter, Decorator, Facade...</div>
+        </div>
+      </button>
+      <button class="category-card behavioral" onclick="filterCategory('behavioral')">
+        <div class="category-icon-wrap" style="background:var(--accent-purple-dim)">
+          <i class="fas fa-exchange-alt" style="color:var(--accent-purple)"></i>
+        </div>
+        <div>
+          <div class="category-count">11</div>
+          <div class="category-name">Behavioral · Hành Vi</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px">Strategy, Observer, Command...</div>
+        </div>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Main Content -->
+<main>
+  <section class="section" style="padding-top:32px">
+    <div class="container">
+
+      <!-- Filter Bar -->
+      <div class="filter-bar" role="search" aria-label="Filter patterns">
+        <div class="filter-group" role="group" aria-label="Filter by category">
+          <button class="filter-btn active" data-filter="all" aria-pressed="true">
+            <i class="fas fa-th-large"></i> Tất cả
+            <span class="filter-count">23</span>
+          </button>
+          <button class="filter-btn creational" data-filter="creational" aria-pressed="false">
+            <i class="fas fa-plus-circle"></i> Creational
+            <span class="filter-count">5</span>
+          </button>
+          <button class="filter-btn structural" data-filter="structural" aria-pressed="false">
+            <i class="fas fa-sitemap"></i> Structural
+            <span class="filter-count">7</span>
+          </button>
+          <button class="filter-btn behavioral" data-filter="behavioral" aria-pressed="false">
+            <i class="fas fa-exchange-alt"></i> Behavioral
+            <span class="filter-count">11</span>
+          </button>
+        </div>
+        <div class="search-input-wrap">
+          <i class="fas fa-search"></i>
+          <input
+            type="search"
+            class="search-input"
+            placeholder="Tìm pattern... (hoặc nhấn /)"
+            aria-label="Tìm kiếm pattern"
+            autocomplete="off">
+        </div>
+      </div>
+
+      <!-- Results Header -->
+      <div class="results-header">
+        <div class="results-info">
+          Hiển thị <strong><span class="results-count">23</span></strong> patterns
+        </div>
+        <div class="priority-legend" aria-label="Priority legend">
+          <span class="priority-legend-item">
+            <span class="priority-dot" style="background:var(--accent-red)"></span>
+            Ưu tiên Cao — học trước
+          </span>
+          <span class="priority-legend-item">
+            <span class="priority-dot" style="background:var(--accent-amber)"></span>
+            Ưu tiên Trung bình
+          </span>
+          <span class="priority-legend-item">
+            <span class="priority-dot" style="background:var(--text-muted)"></span>
+            Ưu tiên Thấp — học sau
+          </span>
+          <span class="priority-legend-item">
+            <span style="width:16px;height:16px;background:var(--accent-green-dim);border:1px solid var(--accent-green-border);border-radius:4px;display:inline-block"></span>
+            Đã học
+          </span>
+        </div>
+      </div>
+
+      <!-- Patterns Grid -->
+      <div id="patterns-grid" class="patterns-grid" role="list" aria-label="Design patterns list">
+        <!-- Rendered by JS from patterns-data.js -->
+        <div class="card" style="text-align:center;padding:60px;grid-column:1/-1">
+          <i class="fas fa-spinner fa-spin" style="font-size:2rem;color:var(--accent-blue);margin-bottom:16px;display:block"></i>
+          <p>Đang tải patterns...</p>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state hidden">
+        <i class="fas fa-search-minus"></i>
+        <h3>Không tìm thấy pattern nào</h3>
+        <p>Thử tìm với từ khóa khác hoặc xóa bộ lọc hiện tại.</p>
+        <button class="btn btn-secondary mt-4" onclick="resetFilters()">
+          <i class="fas fa-times"></i> Xóa bộ lọc
+        </button>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<!-- Footer -->
+<footer class="footer" role="contentinfo">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="footer-logo">
+          <div class="nav-logo-icon"><i class="fas fa-code"></i></div>
+          .NET Design Patterns
+        </a>
+        <p class="footer-description">23 GoF Design Patterns với ví dụ .NET 8 thực tế dành cho developer Việt Nam.</p>
+        <div class="footer-tech-stack">
+          <span class="footer-tech-badge">.NET 8</span>
+          <span class="footer-tech-badge">C# 12</span>
+          <span class="footer-tech-badge">ASP.NET Core</span>
+        </div>
+      </div>
+      <div>
+        <div class="footer-nav-title">Điều hướng</div>
+        <div class="footer-nav-links">
+          <a href="index.html"><i class="fas fa-home"></i> Trang chủ</a>
+          <a href="patterns.html"><i class="fas fa-th-large"></i> 23 Patterns</a>
+          <a href="progress.html"><i class="fas fa-tasks"></i> Tiến độ</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-nav-title">Nhóm Patterns</div>
+        <div class="footer-nav-links">
+          <a href="#" onclick="filterCategory('creational');return false"><i class="fas fa-plus-circle"></i> Creational (5)</a>
+          <a href="#" onclick="filterCategory('structural');return false"><i class="fas fa-sitemap"></i> Structural (7)</a>
+          <a href="#" onclick="filterCategory('behavioral');return false"><i class="fas fa-exchange-alt"></i> Behavioral (11)</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span><i class="fas fa-code"></i> .NET Design Patterns · 2025</span>
+      <span>Xây dựng cho <span class="green"><i class="fas fa-heart"></i></span> .NET developers Việt Nam</span>
+    </div>
+  </div>
+</footer>
+
+<div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+<script src="js/patterns-data.js"></script>
+<script src="js/main.js"></script>
+<script>
+  // Helper functions for category cards
+  function filterCategory(category) {
+    const filterBtn = document.querySelector(`.filter-btn[data-filter="${category}"]`);
+    if (filterBtn) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      filterBtn.classList.add('active');
+      filterBtn.setAttribute('aria-pressed', 'true');
+
+      // Trigger the filter
+      const event = new MouseEvent('click', { bubbles: true });
+      filterBtn.dispatchEvent(event);
+
+      // Scroll to grid
+      document.getElementById('patterns-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  function resetFilters() {
+    filterCategory('all');
+    const searchInput = document.querySelector('.search-input');
+    if (searchInput) {
+      searchInput.value = '';
+      searchInput.dispatchEvent(new Event('input'));
+    }
+  }
+
+  // Check URL params for initial filter
+  document.addEventListener('DOMContentLoaded', () => {
+    const filter = new URLSearchParams(window.location.search).get('filter');
+    if (filter && ['creational', 'structural', 'behavioral'].includes(filter)) {
+      setTimeout(() => filterCategory(filter), 100);
+    }
+  });
+</script>
+</body>
+</html>

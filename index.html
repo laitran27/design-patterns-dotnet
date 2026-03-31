@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Học 23 GoF Design Patterns cho .NET Developer - Lộ trình 16 tuần từ nền tảng đến thành thạo với ví dụ C# .NET 8 thực tế.">
+  <title>.NET Design Patterns — Học Tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="home">
+
+<!-- Navigation -->
+<nav class="navbar" role="navigation" aria-label="Main navigation">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">
+        <i class="fas fa-code"></i>
+      </div>
+      .NET <span>Patterns</span>
+    </a>
+
+    <ul class="nav-links" role="list">
+      <li><a href="index.html" class="active"><i class="fas fa-home"></i> Tổng quan</a></li>
+      <li><a href="patterns.html"><i class="fas fa-th-large"></i> 23 Patterns</a></li>
+      <li><a href="pattern-detail.html?id=singleton"><i class="fas fa-book-open"></i> Chi tiết</a></li>
+      <li>
+        <a href="progress.html">
+          <i class="fas fa-tasks"></i> Tiến độ
+          <span class="nav-badge" id="progress-nav-badge">0%</span>
+        </a>
+      </li>
+    </ul>
+
+    <button class="nav-mobile-toggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero" aria-labelledby="hero-heading">
+  <div class="container">
+    <div class="hero-grid">
+      <div class="hero-content">
+        <div class="hero-eyebrow fade-in">
+          <i class="fas fa-graduation-cap"></i>
+          Dành cho .NET Developer · 8 năm kinh nghiệm
+        </div>
+        <h1 class="hero-title fade-in animate-delay-1" id="hero-heading">
+          Làm chủ<br>
+          <span class="highlight">Design Patterns</span><br>
+          trong .NET
+        </h1>
+        <p class="hero-subtitle fade-in animate-delay-2">
+          Lộ trình học 16 tuần có hệ thống, bao gồm đầy đủ 23 GoF Design Patterns với ví dụ thực tế trong .NET 8, ASP.NET Core, và các framework phổ biến. Được thiết kế riêng cho developer Việt Nam.
+        </p>
+        <div class="hero-actions fade-in animate-delay-3">
+          <a href="#phases" class="btn btn-primary btn-lg">
+            <i class="fas fa-rocket"></i>
+            Bắt đầu học
+          </a>
+          <a href="patterns.html" class="btn btn-secondary btn-lg">
+            <i class="fas fa-th-large"></i>
+            Xem 23 Patterns
+          </a>
+          <a href="progress.html" class="btn btn-ghost btn-lg">
+            <i class="fas fa-tasks"></i>
+            Tiến độ của tôi
+          </a>
+        </div>
+
+        <div class="hero-stats fade-in">
+          <div class="stat-item">
+            <div class="stat-number"><span>23</span></div>
+            <div class="stat-label">GoF Patterns</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number"><span>16</span></div>
+            <div class="stat-label">Tuần học</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number"><span>5</span></div>
+            <div class="stat-label">Giai đoạn</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number"><span>.NET</span></div>
+            <div class="stat-label">8 Examples</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero Visual -->
+      <div class="hero-visual float" aria-hidden="true">
+        <div class="hero-card-stack">
+          <div class="pattern-preview-card">
+            <div class="card-header">
+              <div class="card-dot" style="background:#ef4444"></div>
+              <span class="card-label">Observer Pattern</span>
+            </div>
+            <div class="code-preview">
+              <div class="code-line"><span class="code-keyword">public </span><span class="code-keyword">interface </span><span class="code-class">IObserver</span></div>
+              <div class="code-line"><span style="color:#546e7a">// ...</span></div>
+            </div>
+          </div>
+          <div class="pattern-preview-card">
+            <div class="card-header">
+              <div class="card-dot" style="background:var(--accent-amber)"></div>
+              <span class="card-label">Strategy Pattern</span>
+            </div>
+            <div class="code-preview">
+              <div class="code-line"><span class="code-keyword">public </span><span class="code-keyword">interface </span><span class="code-class">IPricingStrategy</span></div>
+              <div class="code-line"><span style="color:#546e7a">// ...</span></div>
+            </div>
+          </div>
+          <div class="pattern-preview-card" style="background:var(--bg-card)">
+            <div class="card-header">
+              <div class="card-dot"></div>
+              <span class="card-label">Decorator Pattern · .NET 8</span>
+            </div>
+            <div class="code-preview">
+              <div class="code-line">
+                <span class="code-keyword">public class </span>
+                <span class="code-class">CachedRepo</span>
+              </div>
+              <div class="code-line">
+                <span style="padding-left:12px;color:#546e7a">// </span>
+                <span class="code-class" style="padding-left:0">IProductRepository</span>
+              </div>
+              <div class="code-line">
+                <span class="code-keyword" style="padding-left:12px">private </span>
+                <span class="code-keyword">readonly </span>
+                <span class="code-class">IMemoryCache</span>
+              </div>
+              <div class="code-line">
+                <span style="padding-left:12px;color:#546e7a">_cache;</span>
+              </div>
+              <div class="code-line" style="margin-top:6px">
+                <span class="code-keyword" style="padding-left:12px">public async </span>
+                <span class="code-class">Task</span>
+                <span style="color:#82aaff">&lt;</span>
+                <span class="code-class">Product</span>
+                <span style="color:#82aaff">?&gt;</span>
+              </div>
+              <div class="code-line">
+                <span style="padding-left:24px;color:#82aaff">GetByIdAsync</span>
+                <span>(</span>
+                <span class="code-class">Guid</span>
+                <span class="code-param"> id</span>
+                <span>)</span>
+              </div>
+              <div class="code-line">
+                <span style="padding-left:12px;color:#546e7a">// Cache → DB fallback</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Quick Stats Bar -->
+<div class="stats-bar" role="complementary" aria-label="Thống kê học tập">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-bar-item">
+        <div class="stat-bar-icon" style="background:var(--accent-blue-dim)">
+          <i class="fas fa-cubes" style="color:var(--accent-blue)"></i>
+        </div>
+        <div class="stat-bar-info">
+          <div class="stat-bar-number">23</div>
+          <div class="stat-bar-label">GoF Patterns</div>
+        </div>
+      </div>
+      <div class="stat-bar-item">
+        <div class="stat-bar-icon" style="background:var(--accent-green-dim)">
+          <i class="fas fa-code" style="color:var(--accent-green)"></i>
+        </div>
+        <div class="stat-bar-info">
+          <div class="stat-bar-number">5</div>
+          <div class="stat-bar-label">Creational</div>
+        </div>
+      </div>
+      <div class="stat-bar-item">
+        <div class="stat-bar-icon" style="background:rgba(139,92,246,0.15)">
+          <i class="fas fa-sitemap" style="color:var(--accent-purple)"></i>
+        </div>
+        <div class="stat-bar-info">
+          <div class="stat-bar-number">7</div>
+          <div class="stat-bar-label">Structural</div>
+        </div>
+      </div>
+      <div class="stat-bar-item">
+        <div class="stat-bar-icon" style="background:rgba(245,158,11,0.15)">
+          <i class="fas fa-exchange-alt" style="color:var(--accent-amber)"></i>
+        </div>
+        <div class="stat-bar-info">
+          <div class="stat-bar-number">11</div>
+          <div class="stat-bar-label">Behavioral</div>
+        </div>
+      </div>
+      <div class="stat-bar-item">
+        <div class="stat-bar-icon" style="background:rgba(239,68,68,0.15)">
+          <i class="fas fa-calendar-alt" style="color:var(--accent-red)"></i>
+        </div>
+        <div class="stat-bar-info">
+          <div class="stat-bar-number">16</div>
+          <div class="stat-bar-label">Tuần học</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Pattern of the Day -->
+<section class="potd-section" aria-labelledby="potd-heading">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-eyebrow"><i class="fas fa-star"></i> Gợi ý học hôm nay</div>
+      <h2 class="section-title" id="potd-heading">Pattern của Ngày</h2>
+      <p class="section-subtitle">Mỗi ngày tập trung vào một pattern. Đọc kỹ, hiểu ý tưởng, và thử viết code ví dụ riêng.</p>
+    </div>
+    <div id="potd-container">
+      <!-- Rendered by JS -->
+      <div class="card" style="min-height:200px;display:flex;align-items:center;justify-content:center">
+        <div class="skeleton" style="width:200px;height:24px;border-radius:12px"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Learning Phases -->
+<section class="section" id="phases" aria-labelledby="phases-heading">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-eyebrow"><i class="fas fa-map"></i> Lộ trình học</div>
+      <h2 class="section-title" id="phases-heading">5 Giai Đoạn Học Tập</h2>
+      <p class="section-subtitle">Từ patterns nền tảng quan trọng nhất đến patterns chuyên biệt, được sắp xếp theo mức độ ưu tiên và tần suất gặp trong thực tế .NET development.</p>
+    </div>
+
+    <div class="phases-grid">
+
+      <!-- Phase 1 -->
+      <div class="phase-card expanded"
+        data-phase-id="1"
+        data-patterns="singleton,factory-method,builder,adapter,decorator,facade,strategy,observer,command,chain-of-responsibility">
+        <div class="phase-card-header" role="button" tabindex="0" aria-expanded="true">
+          <div class="phase-icon" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8)">
+            <i class="fas fa-rocket"></i>
+          </div>
+          <div class="phase-card-info">
+            <div class="phase-card-title">Giai Đoạn 1: Nền Tảng — Core Patterns</div>
+            <div class="phase-card-meta">
+              <span><i class="fas fa-calendar"></i> Tuần 1-4</span>
+              <span><i class="fas fa-clock"></i> 4 tuần</span>
+              <span><i class="fas fa-cubes"></i> 10 patterns</span>
+            </div>
+          </div>
+          <div class="phase-card-right">
+            <div class="phase-progress-mini">
+              <div class="phase-progress-mini-bar">
+                <div class="phase-progress-mini-fill" style="width:0%"></div>
+              </div>
+              <span class="phase-progress-mini-text">0/10</span>
+            </div>
+            <div class="phase-toggle-btn">
+              <i class="fas fa-chevron-down"></i>
+            </div>
+          </div>
+        </div>
+        <div class="phase-card-body">
+          <div class="phase-card-content">
+            <p class="phase-description">
+              Bắt đầu với 10 patterns quan trọng nhất, xuất hiện hàng ngày trong .NET development. Đây là nền tảng bắt buộc — bạn sẽ thấy chúng trong ASP.NET Core middleware, DI container, EF Core, và hầu hết các library .NET phổ biến.
+            </p>
+            <div class="phase-patterns-list">
+              <a href="pattern-detail.html?id=singleton" class="pattern-tag" data-pattern-id="singleton"><i class="fas fa-dot-circle" style="color:var(--accent-red);font-size:0.6rem"></i> Singleton</a>
+              <a href="pattern-detail.html?id=factory-method" class="pattern-tag" data-pattern-id="factory-method"><i class="fas fa-dot-circle" style="color:var(--accent-red);font-size:0.6rem"></i> Factory Method</a>
+              <a href="pattern-detail.html?id=builder" class="pattern-tag" data-pattern-id="builder"><i class="fas fa-dot-circle" style="color:var(--accent-red);font-size:0.6rem"></i> Builder</a>
+              <a href="pattern-detail.html?id=adapter" class="pattern-tag" data-pattern-id="adapter"><i class="fas fa-dot-circle" style="color:var(--accent-red);font-size:0.6rem"></i> Adapter</a>
+              <a href="pattern-detail.html?id=decorator" class="pattern-tag" data-pattern-id="decorator"><i class="fas fa-dot-circle" style="color:var(--accent-red);font-size:0.6rem"></i> Decorator</a>
+              <a href="pattern-detail.html?id=facade" class="pattern-tag" data-pattern-id="facade"><i class="fas fa-dot-circle" style="color:var(--accent-red);font-size:0.6rem"></i> Facade</a>
+              <a href="pattern-detail.html?id=strategy" class="pattern-tag" data-pattern-id="strategy"><i class="fas fa-dot-circle" style="color:var(--accent-red);font-size:0.6rem"></i> Strategy</a>
+              <a href="pattern-detail.html?id=observer" class="pattern-tag" data-pattern-id="observer"><i class="fas fa-dot-circle" style="color:var(--accent-red);font-size:0.6rem"></i> Observer</a>
+              <a href="pattern-detail.html?id=command" class="pattern-tag" data-pattern-id="command"><i class="fas fa-dot-circle" style="color:var(--accent-red);font-size:0.6rem"></i> Command</a>
+              <a href="pattern-detail.html?id=chain-of-responsibility" class="pattern-tag" data-pattern-id="chain-of-responsibility"><i class="fas fa-dot-circle" style="color:var(--accent-red);font-size:0.6rem"></i> Chain of Responsibility</a>
+            </div>
+            <div class="phase-milestone">
+              <i class="fas fa-trophy"></i>
+              <div>
+                <strong style="color:var(--text-primary)">Milestone:</strong> Áp dụng được 10 patterns vào dự án thực tế. Biết nhận diện khi nào code hiện tại cần được refactor theo pattern nào.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 2 -->
+      <div class="phase-card"
+        data-phase-id="2"
+        data-patterns="abstract-factory,composite,proxy,mediator,state,template-method">
+        <div class="phase-card-header" role="button" tabindex="0" aria-expanded="false">
+          <div class="phase-icon" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9)">
+            <i class="fas fa-layer-group"></i>
+          </div>
+          <div class="phase-card-info">
+            <div class="phase-card-title">Giai Đoạn 2: Mở Rộng — Patterns Bổ Sung</div>
+            <div class="phase-card-meta">
+              <span><i class="fas fa-calendar"></i> Tuần 5-7</span>
+              <span><i class="fas fa-clock"></i> 3 tuần</span>
+              <span><i class="fas fa-cubes"></i> 6 patterns</span>
+            </div>
+          </div>
+          <div class="phase-card-right">
+            <div class="phase-progress-mini">
+              <div class="phase-progress-mini-bar">
+                <div class="phase-progress-mini-fill" style="width:0%"></div>
+              </div>
+              <span class="phase-progress-mini-text">0/6</span>
+            </div>
+            <div class="phase-toggle-btn">
+              <i class="fas fa-chevron-down"></i>
+            </div>
+          </div>
+        </div>
+        <div class="phase-card-body">
+          <div class="phase-card-content">
+            <p class="phase-description">
+              Mở rộng với các patterns structural và behavioral quan trọng. Abstract Factory giúp swap database providers, Proxy thêm authorization layer, State machine quản lý order lifecycle, Mediator là nền tảng của CQRS với MediatR.
+            </p>
+            <div class="phase-patterns-list">
+              <a href="pattern-detail.html?id=abstract-factory" class="pattern-tag" data-pattern-id="abstract-factory"><i class="fas fa-dot-circle" style="color:var(--accent-amber);font-size:0.6rem"></i> Abstract Factory</a>
+              <a href="pattern-detail.html?id=composite" class="pattern-tag" data-pattern-id="composite"><i class="fas fa-dot-circle" style="color:var(--accent-amber);font-size:0.6rem"></i> Composite</a>
+              <a href="pattern-detail.html?id=proxy" class="pattern-tag" data-pattern-id="proxy"><i class="fas fa-dot-circle" style="color:var(--accent-amber);font-size:0.6rem"></i> Proxy</a>
+              <a href="pattern-detail.html?id=mediator" class="pattern-tag" data-pattern-id="mediator"><i class="fas fa-dot-circle" style="color:var(--accent-amber);font-size:0.6rem"></i> Mediator</a>
+              <a href="pattern-detail.html?id=state" class="pattern-tag" data-pattern-id="state"><i class="fas fa-dot-circle" style="color:var(--accent-amber);font-size:0.6rem"></i> State</a>
+              <a href="pattern-detail.html?id=template-method" class="pattern-tag" data-pattern-id="template-method"><i class="fas fa-dot-circle" style="color:var(--accent-amber);font-size:0.6rem"></i> Template Method</a>
+            </div>
+            <div class="phase-milestone">
+              <i class="fas fa-trophy"></i>
+              <div>
+                <strong style="color:var(--text-primary)">Milestone:</strong> Implement được State Machine cho Order System và CQRS architecture với Mediator pattern.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 3 -->
+      <div class="phase-card"
+        data-phase-id="3"
+        data-patterns="prototype,bridge,iterator">
+        <div class="phase-card-header" role="button" tabindex="0" aria-expanded="false">
+          <div class="phase-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706)">
+            <i class="fas fa-puzzle-piece"></i>
+          </div>
+          <div class="phase-card-info">
+            <div class="phase-card-title">Giai Đoạn 3: Bổ Sung — Hoàn Thiện Bộ Patterns</div>
+            <div class="phase-card-meta">
+              <span><i class="fas fa-calendar"></i> Tuần 8-10</span>
+              <span><i class="fas fa-clock"></i> 3 tuần</span>
+              <span><i class="fas fa-cubes"></i> 3 patterns</span>
+            </div>
+          </div>
+          <div class="phase-card-right">
+            <div class="phase-progress-mini">
+              <div class="phase-progress-mini-bar">
+                <div class="phase-progress-mini-fill" style="width:0%"></div>
+              </div>
+              <span class="phase-progress-mini-text">0/3</span>
+            </div>
+            <div class="phase-toggle-btn">
+              <i class="fas fa-chevron-down"></i>
+            </div>
+          </div>
+        </div>
+        <div class="phase-card-body">
+          <div class="phase-card-content">
+            <p class="phase-description">
+              Các patterns ít phổ biến hơn nhưng vẫn xuất hiện trong scenarios đặc biệt. Prototype quan trọng cho deep cloning. Bridge tách abstraction khỏi implementation. Iterator quan trọng vì .NET dùng IEnumerable ở mọi nơi.
+            </p>
+            <div class="phase-patterns-list">
+              <a href="pattern-detail.html?id=prototype" class="pattern-tag" data-pattern-id="prototype"><i class="fas fa-dot-circle" style="color:var(--text-muted);font-size:0.6rem"></i> Prototype</a>
+              <a href="pattern-detail.html?id=bridge" class="pattern-tag" data-pattern-id="bridge"><i class="fas fa-dot-circle" style="color:var(--text-muted);font-size:0.6rem"></i> Bridge</a>
+              <a href="pattern-detail.html?id=iterator" class="pattern-tag" data-pattern-id="iterator"><i class="fas fa-dot-circle" style="color:var(--text-muted);font-size:0.6rem"></i> Iterator</a>
+            </div>
+            <div class="phase-milestone">
+              <i class="fas fa-trophy"></i>
+              <div>
+                <strong style="color:var(--text-primary)">Milestone:</strong> Biết nhận ra khi nào cần dùng mỗi pattern và khi nào không nên dùng — tránh over-engineering.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 4 -->
+      <div class="phase-card"
+        data-phase-id="4"
+        data-patterns="flyweight,memento,visitor">
+        <div class="phase-card-header" role="button" tabindex="0" aria-expanded="false">
+          <div class="phase-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626)">
+            <i class="fas fa-chess"></i>
+          </div>
+          <div class="phase-card-info">
+            <div class="phase-card-title">Giai Đoạn 4: Nâng Cao — Patterns Chuyên Biệt</div>
+            <div class="phase-card-meta">
+              <span><i class="fas fa-calendar"></i> Tuần 11-13</span>
+              <span><i class="fas fa-clock"></i> 3 tuần</span>
+              <span><i class="fas fa-cubes"></i> 3 patterns</span>
+            </div>
+          </div>
+          <div class="phase-card-right">
+            <div class="phase-progress-mini">
+              <div class="phase-progress-mini-bar">
+                <div class="phase-progress-mini-fill" style="width:0%"></div>
+              </div>
+              <span class="phase-progress-mini-text">0/3</span>
+            </div>
+            <div class="phase-toggle-btn">
+              <i class="fas fa-chevron-down"></i>
+            </div>
+          </div>
+        </div>
+        <div class="phase-card-body">
+          <div class="phase-card-content">
+            <p class="phase-description">
+              Patterns có use cases đặc biệt và sâu. Flyweight tối ưu memory khi cần thousands of objects. Memento cho undo/redo systems. Visitor thêm operations vào object graph mà không modify classes — sử dụng trong Roslyn compiler và LINQ expression trees.
+            </p>
+            <div class="phase-patterns-list">
+              <a href="pattern-detail.html?id=flyweight" class="pattern-tag" data-pattern-id="flyweight"><i class="fas fa-dot-circle" style="color:var(--text-muted);font-size:0.6rem"></i> Flyweight</a>
+              <a href="pattern-detail.html?id=memento" class="pattern-tag" data-pattern-id="memento"><i class="fas fa-dot-circle" style="color:var(--text-muted);font-size:0.6rem"></i> Memento</a>
+              <a href="pattern-detail.html?id=visitor" class="pattern-tag" data-pattern-id="visitor"><i class="fas fa-dot-circle" style="color:var(--text-muted);font-size:0.6rem"></i> Visitor</a>
+            </div>
+            <div class="phase-milestone">
+              <i class="fas fa-trophy"></i>
+              <div>
+                <strong style="color:var(--text-primary)">Milestone:</strong> Implement được hệ thống undo/redo cho text editor đơn giản sử dụng Memento pattern.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 5 -->
+      <div class="phase-card"
+        data-phase-id="5"
+        data-patterns="interpreter">
+        <div class="phase-card-header" role="button" tabindex="0" aria-expanded="false">
+          <div class="phase-icon" style="background: linear-gradient(135deg, #22c55e, #16a34a)">
+            <i class="fas fa-crown"></i>
+          </div>
+          <div class="phase-card-info">
+            <div class="phase-card-title">Giai Đoạn 5: Tổng Hợp — Mastery</div>
+            <div class="phase-card-meta">
+              <span><i class="fas fa-calendar"></i> Tuần 14-16</span>
+              <span><i class="fas fa-clock"></i> 3 tuần</span>
+              <span><i class="fas fa-cubes"></i> 1 pattern + Integration</span>
+            </div>
+          </div>
+          <div class="phase-card-right">
+            <div class="phase-progress-mini">
+              <div class="phase-progress-mini-bar">
+                <div class="phase-progress-mini-fill" style="width:0%"></div>
+              </div>
+              <span class="phase-progress-mini-text">0/1</span>
+            </div>
+            <div class="phase-toggle-btn">
+              <i class="fas fa-chevron-down"></i>
+            </div>
+          </div>
+        </div>
+        <div class="phase-card-body">
+          <div class="phase-card-content">
+            <p class="phase-description">
+              Hoàn thành với Interpreter pattern và quan trọng hơn — học cách kết hợp nhiều patterns trong một hệ thống hoàn chỉnh. Học CQRS + MediatR + DDD, nhận ra patterns anti-patterns, và review toàn bộ kiến thức.
+            </p>
+            <div class="phase-patterns-list">
+              <a href="pattern-detail.html?id=interpreter" class="pattern-tag" data-pattern-id="interpreter"><i class="fas fa-dot-circle" style="color:var(--text-muted);font-size:0.6rem"></i> Interpreter</a>
+              <span class="pattern-tag"><i class="fas fa-object-group" style="color:var(--accent-green);font-size:0.65rem"></i> Pattern Integration</span>
+              <span class="pattern-tag"><i class="fas fa-search" style="color:var(--accent-green);font-size:0.65rem"></i> Anti-patterns</span>
+              <span class="pattern-tag"><i class="fas fa-building" style="color:var(--accent-green);font-size:0.65rem"></i> CQRS + DDD</span>
+            </div>
+            <div class="phase-milestone">
+              <i class="fas fa-crown" style="color:var(--accent-amber)"></i>
+              <div>
+                <strong style="color:var(--text-primary)">Milestone cuối:</strong> Design được system architecture sử dụng multiple patterns phù hợp. Build được full-stack application với CQRS, DDD, và ít nhất 10 patterns.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /.phases-grid -->
+  </div>
+</section>
+
+<!-- Tips Section -->
+<section class="section" style="padding-top:0" aria-labelledby="tips-heading">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-eyebrow"><i class="fas fa-lightbulb"></i> Lời khuyên</div>
+      <h2 class="section-title" id="tips-heading">Cách Học Hiệu Quả</h2>
+    </div>
+    <div class="card-grid card-grid-3">
+      <div class="card">
+        <div style="width:48px;height:48px;background:var(--accent-blue-dim);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;margin-bottom:16px">
+          <i class="fas fa-eye" style="color:var(--accent-blue);font-size:1.2rem"></i>
+        </div>
+        <h4 style="margin-bottom:8px">1. Nhận diện trước</h4>
+        <p style="font-size:0.9rem">Trước khi học implementation, hãy tìm hiểu pattern đang được dùng ở đâu trong .NET ecosystem. ASP.NET Core Middleware chính là Chain of Responsibility. IEnumerable là Iterator. Nhận ra pattern trong thực tế trước khi code.</p>
+      </div>
+      <div class="card">
+        <div style="width:48px;height:48px;background:var(--accent-green-dim);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;margin-bottom:16px">
+          <i class="fas fa-pencil-alt" style="color:var(--accent-green);font-size:1.2rem"></i>
+        </div>
+        <h4 style="margin-bottom:8px">2. Viết tay rồi mới chạy</h4>
+        <p style="font-size:0.9rem">Copy-paste không giúp bạn nhớ. Viết tay code example từ đầu, không xem gợi ý. Sau đó refactor lại theo cách của bạn. Việc "vật lộn" với code chính là cách não bộ ghi nhớ tốt nhất.</p>
+      </div>
+      <div class="card">
+        <div style="width:48px;height:48px;background:var(--accent-purple-dim);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;margin-bottom:16px">
+          <i class="fas fa-project-diagram" style="color:var(--accent-purple);font-size:1.2rem"></i>
+        </div>
+        <h4 style="margin-bottom:8px">3. Áp dụng vào dự án thực</h4>
+        <p style="font-size:0.9rem">Sau khi học mỗi pattern, hãy tìm trong codebase hiện tại một chỗ có thể áp dụng hoặc đã đang sử dụng pattern đó mà chưa biết. Học theo context thực tế sẽ nhớ lâu hơn toy examples.</p>
+      </div>
+      <div class="card">
+        <div style="width:48px;height:48px;background:rgba(245,158,11,0.15);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;margin-bottom:16px">
+          <i class="fas fa-exclamation-triangle" style="color:var(--accent-amber);font-size:1.2rem"></i>
+        </div>
+        <h4 style="margin-bottom:8px">4. Học cả "when NOT to use"</h4>
+        <p style="font-size:0.9rem">Over-engineering là bệnh phổ biến khi mới học patterns. Học kỹ phần "khi nào không nên dùng" cũng quan trọng như học implementation. Đơn giản là tốt hơn nếu pattern không thêm giá trị.</p>
+      </div>
+      <div class="card">
+        <div style="width:48px;height:48px;background:rgba(239,68,68,0.15);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;margin-bottom:16px">
+          <i class="fas fa-comments" style="color:var(--accent-red);font-size:1.2rem"></i>
+        </div>
+        <h4 style="margin-bottom:8px">5. Giải thích cho người khác</h4>
+        <p style="font-size:0.9rem">Feynman Technique: nếu bạn có thể giải thích một pattern cho junior developer hiểu trong 2 phút, bạn thực sự đã hiểu nó. Không giải thích được nghĩa là còn hiểu chưa sâu.</p>
+      </div>
+      <div class="card">
+        <div style="width:48px;height:48px;background:var(--accent-green-dim);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;margin-bottom:16px">
+          <i class="fas fa-tasks" style="color:var(--accent-green);font-size:1.2rem"></i>
+        </div>
+        <h4 style="margin-bottom:8px">6. Theo dõi tiến độ</h4>
+        <p style="font-size:0.9rem">Sử dụng trang <a href="progress.html" style="color:var(--accent-blue)">Tiến độ</a> để track những gì đã học. Nhìn thấy progress bars tăng lên là một dạng positive reinforcement hiệu quả. Đánh dấu pattern ngay sau khi bạn đã tự viết được code.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="card" style="text-align:center;padding:60px 40px;background:linear-gradient(135deg, var(--bg-card) 0%, rgba(59,130,246,0.1) 100%);border-color:var(--accent-blue-border)">
+      <div style="width:64px;height:64px;background:linear-gradient(135deg,var(--accent-blue),var(--accent-green));border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:1.5rem;color:white">
+        <i class="fas fa-code"></i>
+      </div>
+      <h2 style="margin-bottom:12px">Sẵn sàng bắt đầu?</h2>
+      <p style="max-width:480px;margin:0 auto 32px;font-size:1rem">
+        Bắt đầu với Giai đoạn 1 ngay hôm nay. 10 patterns quan trọng nhất trong 4 tuần — mỗi ngày chỉ cần 30-45 phút là đủ.
+      </p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <a href="pattern-detail.html?id=singleton" class="btn btn-primary btn-lg">
+          <i class="fas fa-play"></i>
+          Bắt đầu với Singleton
+        </a>
+        <a href="patterns.html" class="btn btn-secondary btn-lg">
+          <i class="fas fa-th-large"></i>
+          Xem tất cả patterns
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer" role="contentinfo">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="footer-logo">
+          <div class="nav-logo-icon">
+            <i class="fas fa-code"></i>
+          </div>
+          .NET Design Patterns
+        </a>
+        <p class="footer-description">
+          Tài nguyên học Design Patterns dành cho .NET developer Việt Nam. 23 GoF patterns với ví dụ thực tế trong .NET 8, ASP.NET Core, và các framework phổ biến nhất.
+        </p>
+        <div class="footer-tech-stack">
+          <span class="footer-tech-badge">.NET 8</span>
+          <span class="footer-tech-badge">ASP.NET Core</span>
+          <span class="footer-tech-badge">C# 12</span>
+          <span class="footer-tech-badge">EF Core</span>
+          <span class="footer-tech-badge">MediatR</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="footer-nav-title">Học tập</div>
+        <div class="footer-nav-links">
+          <a href="index.html"><i class="fas fa-home"></i> Trang chủ</a>
+          <a href="patterns.html"><i class="fas fa-th-large"></i> 23 Patterns</a>
+          <a href="progress.html"><i class="fas fa-tasks"></i> Tiến độ học</a>
+          <a href="#phases"><i class="fas fa-map"></i> Lộ trình học</a>
+        </div>
+      </div>
+
+      <div>
+        <div class="footer-nav-title">Nhóm Patterns</div>
+        <div class="footer-nav-links">
+          <a href="patterns.html?filter=creational"><i class="fas fa-plus-circle"></i> Creational (5)</a>
+          <a href="patterns.html?filter=structural"><i class="fas fa-sitemap"></i> Structural (7)</a>
+          <a href="patterns.html?filter=behavioral"><i class="fas fa-exchange-alt"></i> Behavioral (11)</a>
+          <a href="pattern-detail.html?id=singleton"><i class="fas fa-star"></i> Bắt đầu học</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>
+        <i class="fas fa-code"></i>
+        .NET Design Patterns · Tiếng Việt · 2025
+      </span>
+      <span>
+        Xây dựng cho <span class="green"><i class="fas fa-heart"></i></span> .NET developers Việt Nam
+      </span>
+      <span>
+        <i class="fab fa-microsoft" style="color:var(--accent-blue)"></i>
+        Powered by .NET 8
+      </span>
+    </div>
+  </div>
+</footer>
+
+<!-- Toast Container -->
+<div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+<!-- Scripts -->
+<script src="js/patterns-data.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

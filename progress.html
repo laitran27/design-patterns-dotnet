@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Theo dõi tiến độ học Design Patterns. Checklist theo từng giai đoạn, progress bars, và tổng kết.">
+  <title>Tiến Độ Học — .NET Design Patterns</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .progress-page-header {
+      padding: calc(var(--nav-height) + 40px) 0 40px;
+      background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .achievement-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 14px;
+      margin-bottom: 40px;
+    }
+
+    .achievement-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      text-align: center;
+      transition: all var(--transition-base);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .achievement-card.unlocked {
+      border-color: var(--accent-amber);
+      background: rgba(245, 158, 11, 0.05);
+    }
+
+    .achievement-card.unlocked::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--accent-amber);
+    }
+
+    .achievement-icon {
+      font-size: 2rem;
+      margin-bottom: 8px;
+      display: block;
+      opacity: 0.4;
+    }
+
+    .achievement-card.unlocked .achievement-icon { opacity: 1; }
+
+    .achievement-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+
+    .achievement-desc {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .achievement-card.unlocked .achievement-name { color: var(--accent-amber); }
+
+    .completion-circle {
+      position: relative;
+      width: 140px;
+      height: 140px;
+      margin: 0 auto 24px;
+    }
+
+    .completion-circle svg {
+      transform: rotate(-90deg);
+    }
+
+    .completion-circle-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .actions-toolbar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 32px;
+      padding: 16px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      align-items: center;
+    }
+
+    .actions-toolbar h4 {
+      flex: 1;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+      min-width: 200px;
+    }
+
+    .category-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 32px;
+    }
+
+    .cat-stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 18px;
+    }
+
+    .cat-stat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .cat-stat-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .cat-stat-count {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 768px) {
+      .category-stats { grid-template-columns: 1fr; }
+      .achievement-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body data-page="progress">
+
+<!-- Navigation -->
+<nav class="navbar" role="navigation" aria-label="Main navigation">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">
+        <i class="fas fa-code"></i>
+      </div>
+      .NET <span>Patterns</span>
+    </a>
+    <ul class="nav-links" role="list">
+      <li><a href="index.html"><i class="fas fa-home"></i> Tổng quan</a></li>
+      <li><a href="patterns.html"><i class="fas fa-th-large"></i> 23 Patterns</a></li>
+      <li><a href="pattern-detail.html?id=singleton"><i class="fas fa-book-open"></i> Chi tiết</a></li>
+      <li><a href="progress.html" class="active"><i class="fas fa-tasks"></i> Tiến độ <span class="nav-badge" id="progress-nav-badge">0%</span></a></li>
+    </ul>
+    <button class="nav-mobile-toggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Page Header -->
+<header class="progress-page-header" role="banner">
+  <div class="container">
+    <div class="breadcrumb" aria-label="Breadcrumb">
+      <a href="index.html">Trang chủ</a>
+      <i class="fas fa-chevron-right"></i>
+      <span>Tiến độ học</span>
+    </div>
+    <h1 style="margin-bottom:8px">Tiến Độ Học Tập</h1>
+    <p style="color:var(--text-secondary);font-size:1rem;max-width:600px">
+      Theo dõi hành trình học 23 GoF Design Patterns. Đánh dấu patterns bạn đã học và xem tiến độ theo từng giai đoạn. Dữ liệu được lưu tự động vào trình duyệt của bạn.
+    </p>
+  </div>
+</header>
+
+<!-- Main Content -->
+<main>
+  <section class="section" style="padding-top:32px">
+    <div class="container">
+
+      <!-- Overall Progress Overview -->
+      <div class="progress-overview">
+        <div class="overall-progress-card">
+          <div style="display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center">
+            <div>
+              <div style="font-size:0.82rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px">
+                <i class="fas fa-chart-line" style="color:var(--accent-blue);margin-right:6px"></i>
+                Tiến độ tổng thể
+              </div>
+              <div class="overall-percent" id="overall-percent">0%</div>
+              <div class="overall-label">
+                đã hoàn thành · <strong id="completed-count" style="color:var(--text-primary)">0</strong>/23 patterns
+              </div>
+              <div class="progress-bar-track" style="margin-bottom:12px">
+                <div class="progress-bar-fill" id="overall-bar" style="width:0%"></div>
+              </div>
+              <div style="font-size:0.82rem;color:var(--text-muted)">
+                Còn lại: <strong id="remaining-count" style="color:var(--text-secondary)">23</strong> patterns chưa học
+              </div>
+            </div>
+            <div style="text-align:center">
+              <div class="completion-circle">
+                <svg width="140" height="140" viewBox="0 0 140 140">
+                  <circle cx="70" cy="70" r="58" fill="none" stroke="var(--bg-tertiary)" stroke-width="12"/>
+                  <circle cx="70" cy="70" r="58" fill="none" stroke="url(#progressGradient)"
+                    stroke-width="12" stroke-linecap="round"
+                    stroke-dasharray="364.4"
+                    stroke-dashoffset="364.4"
+                    id="progress-circle"/>
+                  <defs>
+                    <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="var(--accent-blue)"/>
+                      <stop offset="100%" stop-color="var(--accent-green)"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <div class="completion-circle-text">
+                  <div style="font-size:1.5rem;font-weight:800;color:var(--text-primary)" id="circle-pct">0%</div>
+                  <div style="font-size:0.7rem;color:var(--text-muted)">xong</div>
+                </div>
+              </div>
+              <div style="font-size:0.8rem;color:var(--text-muted)">
+                <i class="fas fa-save" style="color:var(--accent-green)"></i> Tự động lưu
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div>
+          <div class="quick-stats-grid">
+            <div class="quick-stat-card">
+              <div class="quick-stat-number" id="completed-count-2" style="color:var(--accent-green)">0</div>
+              <div class="quick-stat-label">Đã học</div>
+            </div>
+            <div class="quick-stat-card">
+              <div class="quick-stat-number" id="remaining-count-2" style="color:var(--accent-blue)">23</div>
+              <div class="quick-stat-label">Còn lại</div>
+            </div>
+            <div class="quick-stat-card" style="grid-column:1/-1">
+              <div class="quick-stat-number" style="color:var(--accent-amber);font-size:1.25rem" id="streak-text">Bắt đầu hôm nay!</div>
+              <div class="quick-stat-label">Hành trình của bạn</div>
+            </div>
+          </div>
+
+          <div style="margin-top:16px;padding:14px;background:var(--accent-blue-dim);border:1px solid var(--accent-blue-border);border-radius:var(--radius-md);font-size:0.85rem;color:var(--text-secondary)">
+            <i class="fas fa-info-circle" style="color:var(--accent-blue);margin-right:8px"></i>
+            Tiến độ được lưu tự động trong trình duyệt này. Không cần đăng nhập.
+          </div>
+        </div>
+      </div>
+
+      <!-- Category Stats -->
+      <div class="category-stats">
+        <div class="cat-stat-card" data-phase-id="creational-stat">
+          <div class="cat-stat-header">
+            <span class="cat-stat-label">
+              <i class="fas fa-plus-circle" style="color:var(--accent-blue)"></i>
+              Creational
+            </span>
+            <span class="cat-stat-count" id="creational-count">0/5</span>
+          </div>
+          <div class="progress-bar-track progress-bar-sm">
+            <div class="progress-bar-fill" id="creational-bar" style="width:0%;background:var(--accent-blue)"></div>
+          </div>
+        </div>
+        <div class="cat-stat-card" data-phase-id="structural-stat">
+          <div class="cat-stat-header">
+            <span class="cat-stat-label">
+              <i class="fas fa-sitemap" style="color:var(--accent-green)"></i>
+              Structural
+            </span>
+            <span class="cat-stat-count" id="structural-count">0/7</span>
+          </div>
+          <div class="progress-bar-track progress-bar-sm">
+            <div class="progress-bar-fill" id="structural-bar" style="width:0%;background:var(--accent-green)"></div>
+          </div>
+        </div>
+        <div class="cat-stat-card" data-phase-id="behavioral-stat">
+          <div class="cat-stat-header">
+            <span class="cat-stat-label">
+              <i class="fas fa-exchange-alt" style="color:var(--accent-purple)"></i>
+              Behavioral
+            </span>
+            <span class="cat-stat-count" id="behavioral-count">0/11</span>
+          </div>
+          <div class="progress-bar-track progress-bar-sm">
+            <div class="progress-bar-fill" id="behavioral-bar" style="width:0%;background:var(--accent-purple)"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Achievements -->
+      <div style="margin-bottom:40px">
+        <h3 style="margin-bottom:20px;display:flex;align-items:center;gap:10px">
+          <i class="fas fa-trophy" style="color:var(--accent-amber)"></i>
+          Thành tích
+        </h3>
+        <div class="achievement-grid" id="achievements-grid">
+          <div class="achievement-card" id="ach-first">
+            <span class="achievement-icon">🎯</span>
+            <div class="achievement-name">Bước đầu tiên</div>
+            <div class="achievement-desc">Học pattern đầu tiên</div>
+          </div>
+          <div class="achievement-card" id="ach-phase1">
+            <span class="achievement-icon">🚀</span>
+            <div class="achievement-name">Giai đoạn 1</div>
+            <div class="achievement-desc">Hoàn thành 10 core patterns</div>
+          </div>
+          <div class="achievement-card" id="ach-halfway">
+            <span class="achievement-icon">⚡</span>
+            <div class="achievement-name">Nửa chặng đường</div>
+            <div class="achievement-desc">Học được 11/23 patterns</div>
+          </div>
+          <div class="achievement-card" id="ach-creational">
+            <span class="achievement-icon">🏗️</span>
+            <div class="achievement-name">Builder Master</div>
+            <div class="achievement-desc">Hoàn thành tất cả Creational</div>
+          </div>
+          <div class="achievement-card" id="ach-structural">
+            <span class="achievement-icon">🏛️</span>
+            <div class="achievement-name">Architect</div>
+            <div class="achievement-desc">Hoàn thành tất cả Structural</div>
+          </div>
+          <div class="achievement-card" id="ach-complete">
+            <span class="achievement-icon">👑</span>
+            <div class="achievement-name">Pattern Master</div>
+            <div class="achievement-desc">Học đủ cả 23 patterns!</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="actions-toolbar">
+        <h4>
+          <i class="fas fa-list-check" style="color:var(--accent-blue);margin-right:8px"></i>
+          Checklist tiến độ học theo từng giai đoạn
+        </h4>
+        <button class="btn btn-secondary btn-sm" id="expand-all-btn">
+          <i class="fas fa-expand-alt"></i> Mở rộng tất cả
+        </button>
+        <button class="btn btn-secondary btn-sm" id="collapse-all-btn">
+          <i class="fas fa-compress-alt"></i> Thu gọn tất cả
+        </button>
+        <button class="btn btn-ghost btn-sm" id="reset-progress-btn" style="color:var(--accent-red);border-color:rgba(239,68,68,0.3)">
+          <i class="fas fa-trash-alt"></i> Xóa tiến độ
+        </button>
+      </div>
+
+      <!-- Phases Checklist -->
+      <div id="progress-phases-container">
+        <!-- Rendered by JS -->
+        <div class="card" style="text-align:center;padding:60px">
+          <i class="fas fa-spinner fa-spin" style="font-size:2rem;color:var(--accent-blue);margin-bottom:16px;display:block"></i>
+          <p>Đang tải...</p>
+        </div>
+      </div>
+
+      <!-- Motivational section at bottom -->
+      <div style="text-align:center;padding:40px;margin-top:20px">
+        <h3 style="margin-bottom:12px" id="motivational-title">Bắt đầu hành trình của bạn!</h3>
+        <p id="motivational-text" style="color:var(--text-muted);max-width:480px;margin:0 auto 24px">
+          Hành trình 16 tuần bắt đầu từ một bước đầu tiên. Hãy học Singleton ngay hôm nay!
+        </p>
+        <a href="pattern-detail.html?id=singleton" class="btn btn-primary" id="cta-btn">
+          <i class="fas fa-play"></i>
+          Bắt đầu với Singleton
+        </a>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<!-- Footer -->
+<footer class="footer" role="contentinfo">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="footer-logo">
+          <div class="nav-logo-icon"><i class="fas fa-code"></i></div>
+          .NET Design Patterns
+        </a>
+        <p class="footer-description">23 GoF Design Patterns với ví dụ .NET 8 thực tế dành cho developer Việt Nam.</p>
+        <div class="footer-tech-stack">
+          <span class="footer-tech-badge">.NET 8</span>
+          <span class="footer-tech-badge">C# 12</span>
+          <span class="footer-tech-badge">ASP.NET Core</span>
+        </div>
+      </div>
+      <div>
+        <div class="footer-nav-title">Điều hướng</div>
+        <div class="footer-nav-links">
+          <a href="index.html"><i class="fas fa-home"></i> Trang chủ</a>
+          <a href="patterns.html"><i class="fas fa-th-large"></i> 23 Patterns</a>
+          <a href="progress.html"><i class="fas fa-tasks"></i> Tiến độ</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-nav-title">Bắt đầu học</div>
+        <div class="footer-nav-links">
+          <a href="pattern-detail.html?id=singleton"><i class="fas fa-play"></i> Singleton</a>
+          <a href="pattern-detail.html?id=factory-method"><i class="fas fa-play"></i> Factory Method</a>
+          <a href="pattern-detail.html?id=decorator"><i class="fas fa-play"></i> Decorator</a>
+          <a href="pattern-detail.html?id=strategy"><i class="fas fa-play"></i> Strategy</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span><i class="fas fa-code"></i> .NET Design Patterns · 2025</span>
+      <span>Dữ liệu tiến độ lưu tự động <span class="green"><i class="fas fa-lock"></i></span> trong trình duyệt</span>
+    </div>
+  </div>
+</footer>
+
+<div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+<script src="js/patterns-data.js"></script>
+<script src="js/main.js"></script>
+<script>
+  // Extended progress page functionality
+  document.addEventListener('DOMContentLoaded', () => {
+    if (typeof PATTERNS_DATA === 'undefined') return;
+
+    // Update category progress bars
+    function updateCategoryBars(progress) {
+      ['creational', 'structural', 'behavioral'].forEach(cat => {
+        const patterns = PATTERNS_DATA.filter(p => p.category === cat);
+        const done = patterns.filter(p => progress[p.id]).length;
+        const pct = Math.round((done / patterns.length) * 100);
+
+        const bar = document.getElementById(`${cat}-bar`);
+        if (bar) bar.style.width = `${pct}%`;
+
+        const count = document.getElementById(`${cat}-count`);
+        if (count) count.textContent = `${done}/${patterns.length}`;
+      });
+    }
+
+    // Update circular progress
+    function updateCircle(pct) {
+      const circle = document.getElementById('progress-circle');
+      const circleText = document.getElementById('circle-pct');
+      if (circle) {
+        const circumference = 364.4;
+        const offset = circumference - (pct / 100) * circumference;
+        circle.style.strokeDashoffset = offset;
+      }
+      if (circleText) circleText.textContent = `${pct}%`;
+    }
+
+    // Check achievements
+    function checkAchievements(progress) {
+      const completed = Object.values(progress).filter(Boolean).length;
+      const phase1Patterns = ['singleton','factory-method','builder','adapter','decorator','facade','strategy','observer','command','chain-of-responsibility'];
+      const phase1Done = phase1Patterns.every(id => progress[id]);
+      const creationalDone = PATTERNS_DATA.filter(p=>p.category==='creational').every(p=>progress[p.id]);
+      const structuralDone = PATTERNS_DATA.filter(p=>p.category==='structural').every(p=>progress[p.id]);
+
+      if (completed >= 1) document.getElementById('ach-first')?.classList.add('unlocked');
+      if (phase1Done) document.getElementById('ach-phase1')?.classList.add('unlocked');
+      if (completed >= 11) document.getElementById('ach-halfway')?.classList.add('unlocked');
+      if (creationalDone) document.getElementById('ach-creational')?.classList.add('unlocked');
+      if (structuralDone) document.getElementById('ach-structural')?.classList.add('unlocked');
+      if (completed === 23) document.getElementById('ach-complete')?.classList.add('unlocked');
+    }
+
+    // Update duplicate stat counts
+    function updateStats(progress) {
+      const completed = Object.values(progress).filter(Boolean).length;
+      const el1 = document.getElementById('completed-count-2');
+      const el2 = document.getElementById('remaining-count-2');
+      if (el1) el1.textContent = completed;
+      if (el2) el2.textContent = 23 - completed;
+
+      // Motivational text
+      const title = document.getElementById('motivational-title');
+      const text = document.getElementById('motivational-text');
+      const btn = document.getElementById('cta-btn');
+
+      if (completed === 0) {
+        // default state
+      } else if (completed < 5) {
+        if (title) title.textContent = `Khởi đầu tốt! Bạn đã học ${completed} pattern.`;
+        if (text) text.textContent = `Tiếp tục nhé! Còn ${23 - completed} patterns nữa trong hành trình 16 tuần.`;
+      } else if (completed < 10) {
+        if (title) title.textContent = `Bạn đang tiến bộ tốt! ${completed}/23 patterns.`;
+        if (text) text.textContent = `Giai đoạn 1 gần xong rồi. Hoàn thành 10 core patterns để có nền tảng vững chắc!`;
+        if (btn) btn.href = 'patterns.html';
+        if (btn) btn.innerHTML = '<i class="fas fa-tasks"></i> Tiếp tục học';
+      } else if (completed < 23) {
+        if (title) title.textContent = `Xuất sắc! ${completed}/23 patterns hoàn thành.`;
+        if (text) text.textContent = `Bạn đang trên đường trở thành .NET Design Patterns expert. Còn ${23 - completed} patterns nữa!`;
+        if (btn) btn.href = 'patterns.html';
+        if (btn) btn.innerHTML = '<i class="fas fa-rocket"></i> Tiếp tục học';
+      } else {
+        if (title) title.textContent = '🎉 Chúc mừng! Bạn đã hoàn thành tất cả 23 patterns!';
+        if (text) text.textContent = 'Bạn đã học đủ tất cả GoF Design Patterns. Giờ là lúc áp dụng vào các dự án thực tế!';
+        if (btn) btn.href = 'patterns.html';
+        if (btn) btn.innerHTML = '<i class="fas fa-crown"></i> Ôn tập lại';
+      }
+
+      // Streak message
+      const streakEl = document.getElementById('streak-text');
+      if (streakEl) {
+        if (completed === 0) streakEl.textContent = 'Bắt đầu hôm nay!';
+        else if (completed < 5) streakEl.textContent = `${completed} patterns! Tiếp tục nhé 💪`;
+        else if (completed < 23) streakEl.textContent = `${Math.round(completed/23*100)}% hành trình hoàn thành`;
+        else streakEl.textContent = '🏆 MASTER LEVEL!';
+      }
+    }
+
+    // Override updateOverallProgress from main.js to also update circle
+    const originalUpdate = window.updateOverallProgress;
+    window.updateOverallProgress = function(stats) {
+      if (originalUpdate) originalUpdate(stats);
+      updateCircle(stats.percentage);
+    };
+
+    // Observe progress changes
+    const progress = (() => {
+      try { return JSON.parse(localStorage.getItem('dotnet_patterns_progress') || '{}'); }
+      catch { return {}; }
+    })();
+
+    const stats = {
+      total: 23,
+      completed: Object.values(progress).filter(Boolean).length,
+      percentage: Math.round(Object.values(progress).filter(Boolean).length / 23 * 100)
+    };
+
+    updateCircle(stats.percentage);
+    updateCategoryBars(progress);
+    checkAchievements(progress);
+    updateStats(progress);
+
+    // Listen for progress changes
+    const checkIntervalId = setInterval(() => {
+      const newProgress = (() => {
+        try { return JSON.parse(localStorage.getItem('dotnet_patterns_progress') || '{}'); }
+        catch { return {}; }
+      })();
+      updateCategoryBars(newProgress);
+      checkAchievements(newProgress);
+      updateStats(newProgress);
+      const done = Object.values(newProgress).filter(Boolean).length;
+      updateCircle(Math.round(done / 23 * 100));
+    }, 500);
+
+    // Expand/Collapse all
+    const expandBtn = document.getElementById('expand-all-btn');
+    const collapseBtn = document.getElementById('collapse-all-btn');
+
+    if (expandBtn) {
+      expandBtn.addEventListener('click', () => {
+        document.querySelectorAll('.phase-progress-card').forEach(card => {
+          const body = card.querySelector('.phase-progress-body');
+          const chevron = card.querySelector('.fa-chevron-down');
+          card.classList.add('expanded');
+          if (body) body.style.display = 'block';
+          if (chevron) chevron.style.transform = 'rotate(180deg)';
+        });
+      });
+    }
+
+    if (collapseBtn) {
+      collapseBtn.addEventListener('click', () => {
+        document.querySelectorAll('.phase-progress-card').forEach(card => {
+          const body = card.querySelector('.phase-progress-body');
+          const chevron = card.querySelector('.fa-chevron-down');
+          card.classList.remove('expanded');
+          if (body) body.style.display = 'none';
+          if (chevron) chevron.style.transform = '';
+        });
+      });
+    }
+  });
+</script>
+</body>
+</html>
