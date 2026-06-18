@@ -17,22 +17,10 @@ function initNavigation() {
   const mobileToggle = $('.nav-mobile-toggle');
   const navLinks = $('.nav-links');
 
-  // Scroll effect
-  let lastScroll = 0;
-  const handleScroll = () => {
-    const currentScroll = window.scrollY;
-    navbar?.classList.toggle('scrolled', currentScroll > 20);
-    lastScroll = currentScroll;
-  };
+  const setMobileMenu = (isOpen) => {
+    navLinks?.classList.toggle('open', isOpen);
+    mobileToggle?.setAttribute('aria-expanded', String(isOpen));
 
-  window.addEventListener('scroll', handleScroll, { passive: true });
-  handleScroll();
-
-  // Mobile toggle
-  on(mobileToggle, 'click', () => {
-    const isOpen = navLinks?.classList.toggle('open');
-    mobileToggle.setAttribute('aria-expanded', isOpen);
-    // Animate hamburger
     const spans = $$('span', mobileToggle);
     if (isOpen) {
       spans[0]?.style.setProperty('transform', 'rotate(45deg) translate(5px, 5px)');
@@ -41,13 +29,26 @@ function initNavigation() {
     } else {
       spans.forEach(s => s.removeAttribute('style'));
     }
+  };
+
+  // Scroll effect
+  const handleScroll = () => {
+    const currentScroll = window.scrollY;
+    navbar?.classList.toggle('scrolled', currentScroll > 20);
+  };
+
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  handleScroll();
+
+  // Mobile toggle
+  on(mobileToggle, 'click', () => {
+    setMobileMenu(!navLinks?.classList.contains('open'));
   });
 
   // Close mobile menu on link click
   $$('.nav-links a').forEach(link => {
     on(link, 'click', () => {
-      navLinks?.classList.remove('open');
-      $$('span', mobileToggle).forEach(s => s.removeAttribute('style'));
+      setMobileMenu(false);
     });
   });
 
@@ -56,8 +57,7 @@ function initNavigation() {
     if (navLinks?.classList.contains('open') &&
         !navLinks.contains(e.target) &&
         !mobileToggle?.contains(e.target)) {
-      navLinks.classList.remove('open');
-      $$('span', mobileToggle).forEach(s => s.removeAttribute('style'));
+      setMobileMenu(false);
     }
   });
 
@@ -68,7 +68,8 @@ function initNavigation() {
 function setActiveNavLink() {
   const currentPath = window.location.pathname.split('/').pop() || 'index.html';
   $$('.nav-links a').forEach(link => {
-    const href = link.getAttribute('href')?.split('/').pop() || '';
+    const rawHref = link.getAttribute('href') || '';
+    const href = rawHref.split('/').pop().split('?')[0].split('#')[0] || 'index.html';
     link.classList.toggle('active', href === currentPath);
   });
 }
@@ -165,8 +166,12 @@ function initPatternFiltering() {
 
   filterBtns.forEach(btn => {
     on(btn, 'click', () => {
-      filterBtns.forEach(b => b.classList.remove('active'));
+      filterBtns.forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-pressed', 'false');
+      });
       btn.classList.add('active');
+      btn.setAttribute('aria-pressed', 'true');
       activeCategory = btn.dataset.filter || 'all';
       applyFilters();
     });
@@ -194,6 +199,26 @@ function initPatternFiltering() {
 
   // Initialize
   applyFilters();
+}
+
+function filterCategory(category, options = {}) {
+  const { scroll = true } = options;
+  const filterBtn = document.querySelector(`.filter-btn[data-filter="${category}"]`);
+  if (!filterBtn) return;
+
+  filterBtn.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+  if (scroll) {
+    document.getElementById('patterns-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+function resetFilters() {
+  filterCategory('all', { scroll: false });
+  const searchInput = document.querySelector('.search-input');
+  if (searchInput) {
+    searchInput.value = '';
+    searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+  }
 }
 
 // ── Pattern of the Day ─────────────────────────────────────
@@ -389,6 +414,7 @@ function updateAllProgressBars(progress) {
   // Overall progress
   const stats = getProgressStats(progress);
   updateOverallProgress(stats);
+  updateProgressPageExtras(progress, stats);
 
   // Nav badge
   const navBadge = $('.nav-badge');
@@ -409,6 +435,95 @@ function updateOverallProgress(stats) {
   if (completedCount) completedCount.textContent = stats.completed;
   if (remainingCount) remainingCount.textContent = stats.total - stats.completed;
   if (progressPct) progressPct.textContent = `${stats.percentage}%`;
+}
+
+function updateProgressPageExtras(progress, stats = getProgressStats(progress)) {
+  if (!document.getElementById('progress-circle')) return;
+
+  ['creational', 'structural', 'behavioral'].forEach(cat => {
+    const patterns = PATTERNS_DATA.filter(p => p.category === cat);
+    const done = patterns.filter(p => progress[p.id]).length;
+    const pct = Math.round((done / patterns.length) * 100);
+
+    const bar = document.getElementById(`${cat}-bar`);
+    if (bar) bar.style.width = `${pct}%`;
+
+    const count = document.getElementById(`${cat}-count`);
+    if (count) count.textContent = `${done}/${patterns.length}`;
+  });
+
+  const circle = document.getElementById('progress-circle');
+  const circleText = document.getElementById('circle-pct');
+  if (circle) {
+    const circumference = 364.4;
+    circle.style.strokeDashoffset = circumference - (stats.percentage / 100) * circumference;
+  }
+  if (circleText) circleText.textContent = `${stats.percentage}%`;
+
+  const completed = stats.completed;
+  const phase1Patterns = ['singleton', 'factory-method', 'builder', 'adapter', 'decorator', 'facade', 'strategy', 'observer', 'command', 'chain-of-responsibility'];
+  const achievements = {
+    'ach-first': completed >= 1,
+    'ach-phase1': phase1Patterns.every(id => progress[id]),
+    'ach-halfway': completed >= 11,
+    'ach-creational': PATTERNS_DATA.filter(p => p.category === 'creational').every(p => progress[p.id]),
+    'ach-structural': PATTERNS_DATA.filter(p => p.category === 'structural').every(p => progress[p.id]),
+    'ach-complete': completed === stats.total
+  };
+
+  Object.entries(achievements).forEach(([id, unlocked]) => {
+    document.getElementById(id)?.classList.toggle('unlocked', unlocked);
+  });
+
+  const completedAlt = document.getElementById('completed-count-2');
+  const remainingAlt = document.getElementById('remaining-count-2');
+  if (completedAlt) completedAlt.textContent = completed;
+  if (remainingAlt) remainingAlt.textContent = stats.total - completed;
+
+  const title = document.getElementById('motivational-title');
+  const text = document.getElementById('motivational-text');
+  const btn = document.getElementById('cta-btn');
+
+  if (completed === 0) {
+    if (title) title.textContent = 'Bắt đầu hành trình của bạn!';
+    if (text) text.textContent = 'Hành trình 16 tuần bắt đầu từ một bước đầu tiên. Hãy học Singleton ngay hôm nay!';
+    if (btn) {
+      btn.href = 'pattern-detail.html?id=singleton';
+      btn.innerHTML = '<i class="fas fa-play"></i> Bắt đầu với Singleton';
+    }
+  } else if (completed < 5) {
+    if (title) title.textContent = `Khởi đầu tốt! Bạn đã học ${completed} pattern.`;
+    if (text) text.textContent = `Tiếp tục nhé! Còn ${stats.total - completed} patterns nữa trong hành trình 16 tuần.`;
+  } else if (completed < 10) {
+    if (title) title.textContent = `Bạn đang tiến bộ tốt! ${completed}/${stats.total} patterns.`;
+    if (text) text.textContent = 'Giai đoạn 1 gần xong rồi. Hoàn thành 10 core patterns để có nền tảng vững chắc!';
+    if (btn) {
+      btn.href = 'patterns.html';
+      btn.innerHTML = '<i class="fas fa-tasks"></i> Tiếp tục học';
+    }
+  } else if (completed < stats.total) {
+    if (title) title.textContent = `Xuất sắc! ${completed}/${stats.total} patterns hoàn thành.`;
+    if (text) text.textContent = `Bạn đang trên đường trở thành .NET Design Patterns expert. Còn ${stats.total - completed} patterns nữa!`;
+    if (btn) {
+      btn.href = 'patterns.html';
+      btn.innerHTML = '<i class="fas fa-rocket"></i> Tiếp tục học';
+    }
+  } else {
+    if (title) title.textContent = 'Chúc mừng! Bạn đã hoàn thành tất cả 23 patterns!';
+    if (text) text.textContent = 'Bạn đã học đủ tất cả GoF Design Patterns. Giờ là lúc áp dụng vào các dự án thực tế!';
+    if (btn) {
+      btn.href = 'patterns.html';
+      btn.innerHTML = '<i class="fas fa-crown"></i> Ôn tập lại';
+    }
+  }
+
+  const streakEl = document.getElementById('streak-text');
+  if (streakEl) {
+    if (completed === 0) streakEl.textContent = 'Bắt đầu hôm nay!';
+    else if (completed < 5) streakEl.textContent = `${completed} patterns! Tiếp tục nhé`;
+    else if (completed < stats.total) streakEl.textContent = `${stats.percentage}% hành trình hoàn thành`;
+    else streakEl.textContent = 'MASTER LEVEL!';
+  }
 }
 
 // Initialize progress display on other pages (nav badge, etc.)
@@ -773,6 +888,28 @@ function initPatternsPage() {
 
   // Init filtering after rendering
   initPatternFiltering();
+  initPatternFilterShortcuts();
+
+  const initialFilter = qs('filter');
+  if (['creational', 'structural', 'behavioral'].includes(initialFilter)) {
+    filterCategory(initialFilter, { scroll: false });
+  }
+}
+
+function initPatternFilterShortcuts() {
+  $$('[data-category-filter]').forEach(el => {
+    on(el, 'click', (e) => {
+      e.preventDefault();
+      filterCategory(el.dataset.categoryFilter);
+    });
+  });
+
+  $$('[data-reset-filters]').forEach(el => {
+    on(el, 'click', (e) => {
+      e.preventDefault();
+      resetFilters();
+    });
+  });
 }
 
 // ── Progress Page Init ─────────────────────────────────────
@@ -793,7 +930,7 @@ function initProgressPage() {
       <div class="phase-progress-card"
         data-phase-id="${phase.id}"
         data-patterns="${phasePatterns.map(p => p.id).join(',')}">
-        <div class="phase-progress-header" onclick="this.closest('.phase-progress-card').classList.toggle('expanded')">
+        <div class="phase-progress-header" role="button" tabindex="0" aria-expanded="false">
           <div class="phase-progress-title-area">
             <div class="phase-icon" style="background:${phase.color};width:40px;height:40px;font-size:1rem">
               <i class="fas ${phase.icon}"></i>
@@ -855,24 +992,23 @@ function initProgressPage() {
   // Handle phase expand/collapse
   $$('.phase-progress-card').forEach(card => {
     const header = card.querySelector('.phase-progress-header');
-    const body = card.querySelector('.phase-progress-body');
-    const chevron = card.querySelector('.fa-chevron-down');
 
     on(header, 'click', () => {
-      const isExpanded = card.classList.toggle('expanded');
-      if (body) body.style.display = isExpanded ? 'block' : 'none';
-      if (chevron) chevron.style.transform = isExpanded ? 'rotate(180deg)' : '';
+      setProgressCardExpanded(card, !card.classList.contains('expanded'));
+    });
+
+    on(header, 'keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        setProgressCardExpanded(card, !card.classList.contains('expanded'));
+      }
     });
   });
 
   // Auto-expand first phase
   const firstCard = $$('.phase-progress-card')[0];
   if (firstCard) {
-    firstCard.classList.add('expanded');
-    const body = firstCard.querySelector('.phase-progress-body');
-    const chevron = firstCard.querySelector('.fa-chevron-down');
-    if (body) body.style.display = 'block';
-    if (chevron) chevron.style.transform = 'rotate(180deg)';
+    setProgressCardExpanded(firstCard, true);
   }
 
   // Init progress tracker
@@ -886,6 +1022,25 @@ function initProgressPage() {
     showToast('Đã xóa tiến độ học', 'info');
     setTimeout(() => location.reload(), 1000);
   });
+
+  on(document.getElementById('expand-all-btn'), 'click', () => {
+    $$('.phase-progress-card').forEach(card => setProgressCardExpanded(card, true));
+  });
+
+  on(document.getElementById('collapse-all-btn'), 'click', () => {
+    $$('.phase-progress-card').forEach(card => setProgressCardExpanded(card, false));
+  });
+}
+
+function setProgressCardExpanded(card, isExpanded) {
+  const body = card.querySelector('.phase-progress-body');
+  const header = card.querySelector('.phase-progress-header');
+  const chevron = card.querySelector('.fa-chevron-down');
+
+  card.classList.toggle('expanded', isExpanded);
+  if (body) body.style.display = isExpanded ? 'block' : 'none';
+  if (header) header.setAttribute('aria-expanded', String(isExpanded));
+  if (chevron) chevron.style.transform = isExpanded ? 'rotate(180deg)' : '';
 }
 
 // ── Intersection Observer (Animations) ────────────────────

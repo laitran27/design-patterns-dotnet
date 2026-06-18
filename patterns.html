@@ -156,7 +156,7 @@
 
     <!-- Category Overview -->
     <div class="category-overview">
-      <button class="category-card creational" onclick="filterCategory('creational')">
+      <button class="category-card creational" data-category-filter="creational">
         <div class="category-icon-wrap" style="background:var(--accent-blue-dim)">
           <i class="fas fa-plus-circle" style="color:var(--accent-blue)"></i>
         </div>
@@ -166,7 +166,7 @@
           <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px">Singleton, Factory, Builder...</div>
         </div>
       </button>
-      <button class="category-card structural" onclick="filterCategory('structural')">
+      <button class="category-card structural" data-category-filter="structural">
         <div class="category-icon-wrap" style="background:var(--accent-green-dim)">
           <i class="fas fa-sitemap" style="color:var(--accent-green)"></i>
         </div>
@@ -176,7 +176,7 @@
           <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px">Adapter, Decorator, Facade...</div>
         </div>
       </button>
-      <button class="category-card behavioral" onclick="filterCategory('behavioral')">
+      <button class="category-card behavioral" data-category-filter="behavioral">
         <div class="category-icon-wrap" style="background:var(--accent-purple-dim)">
           <i class="fas fa-exchange-alt" style="color:var(--accent-purple)"></i>
         </div>
@@ -265,7 +265,7 @@
         <i class="fas fa-search-minus"></i>
         <h3>Không tìm thấy pattern nào</h3>
         <p>Thử tìm với từ khóa khác hoặc xóa bộ lọc hiện tại.</p>
-        <button class="btn btn-secondary mt-4" onclick="resetFilters()">
+        <button class="btn btn-secondary mt-4" data-reset-filters>
           <i class="fas fa-times"></i> Xóa bộ lọc
         </button>
       </div>
@@ -301,9 +301,9 @@
       <div>
         <div class="footer-nav-title">Nhóm Patterns</div>
         <div class="footer-nav-links">
-          <a href="#" onclick="filterCategory('creational');return false"><i class="fas fa-plus-circle"></i> Creational (5)</a>
-          <a href="#" onclick="filterCategory('structural');return false"><i class="fas fa-sitemap"></i> Structural (7)</a>
-          <a href="#" onclick="filterCategory('behavioral');return false"><i class="fas fa-exchange-alt"></i> Behavioral (11)</a>
+          <a href="patterns.html?filter=creational" data-category-filter="creational"><i class="fas fa-plus-circle"></i> Creational (5)</a>
+          <a href="patterns.html?filter=structural" data-category-filter="structural"><i class="fas fa-sitemap"></i> Structural (7)</a>
+          <a href="patterns.html?filter=behavioral" data-category-filter="behavioral"><i class="fas fa-exchange-alt"></i> Behavioral (11)</a>
         </div>
       </div>
     </div>
@@ -318,40 +318,5 @@
 
 <script src="js/patterns-data.js"></script>
 <script src="js/main.js"></script>
-<script>
-  // Helper functions for category cards
-  function filterCategory(category) {
-    const filterBtn = document.querySelector(`.filter-btn[data-filter="${category}"]`);
-    if (filterBtn) {
-      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-      filterBtn.classList.add('active');
-      filterBtn.setAttribute('aria-pressed', 'true');
-
-      // Trigger the filter
-      const event = new MouseEvent('click', { bubbles: true });
-      filterBtn.dispatchEvent(event);
-
-      // Scroll to grid
-      document.getElementById('patterns-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }
-
-  function resetFilters() {
-    filterCategory('all');
-    const searchInput = document.querySelector('.search-input');
-    if (searchInput) {
-      searchInput.value = '';
-      searchInput.dispatchEvent(new Event('input'));
-    }
-  }
-
-  // Check URL params for initial filter
-  document.addEventListener('DOMContentLoaded', () => {
-    const filter = new URLSearchParams(window.location.search).get('filter');
-    if (filter && ['creational', 'structural', 'behavioral'].includes(filter)) {
-      setTimeout(() => filterCategory(filter), 100);
-    }
-  });
-</script>
 </body>
 </html>
